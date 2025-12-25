@@ -95,6 +95,6 @@ class PosController extends Controller
 
         toast('POS Sale Created!', 'success');
 
-        return redirect()->route('sales.index');
+        return redirect()->route('app.pos.index');
     }
 }
