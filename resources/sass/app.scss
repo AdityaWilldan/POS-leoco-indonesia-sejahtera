@@ -1,0 +1,335 @@
+/* =========================================================
+   THEME VARIABLES (PALING ATAS - WAJIB)
+   ========================================================= */
+
+/* Warna utama */
+$primary:   #0f766e;
+$secondary: #4d7c74;
+$success:   #15803d;
+$danger:    #991b1b;
+$warning:   #a16207;
+$info:      #0e7490;
+
+/* Gray + Dark Green */
+$gray-900:  #0b1412;
+$gray-800:  #121c1a;
+$gray-700:  #1f2b28;
+$gray-600:  #2f3f3b;
+$gray-500:  #4b5f5a;
+
+$light:     $gray-700;
+$dark:      #022c22;
+
+$body-bg:   $gray-900;
+$body-color:#d1fae5;
+
+/* =========================================================
+   IMPORT COREUI
+   ========================================================= */
+@import '@coreui/coreui/scss/coreui';
+
+/* =========================================================
+   GLOBAL RESET (INI PALING PENTING)
+   ========================================================= */
+body,
+.wrapper,
+.c-body,
+.c-app {
+    background-color: $body-bg !important;
+    color: $body-color;
+}
+
+/* =========================================================
+   HEADER / NAVBAR (HILANGKAN PUTIH)
+   ========================================================= */
+.c-header,
+.header,
+header {
+    background: $gray-800 !important;
+    border-bottom: 1px solid $gray-600;
+}
+
+.c-header-nav-link,
+.c-header-nav-btn {
+    color: #9fe3d7;
+}
+
+.c-header-nav-link:hover {
+    color: #ffffff;
+}
+
+/* =========================================================
+   FOOTER (HILANGKAN PUTIH)
+   ========================================================= */
+.c-footer,
+footer {
+    background: $gray-800 !important;
+    border-top: 1px solid $gray-600;
+    color: #9fe3d7;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+.c-sidebar {
+    background: $dark;
+}
+
+.c-sidebar-brand {
+    background: darken($dark, 5%);
+    color: #d1fae5;
+}
+
+.c-sidebar-nav-link {
+    color: #9fe3d7;
+}
+
+.c-sidebar-nav-link:hover {
+    background: rgba(15,118,110,.35);
+    color: #ffffff;
+}
+
+.c-sidebar-nav-link.c-active,
+.c-active.c-sidebar-nav-dropdown-toggle {
+    background: $primary;
+    color: #ffffff;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+.card {
+    background: $gray-800;
+    border: 1px solid $gray-600;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgb(0 0 0 / 45%);
+}
+
+.card-header {
+    background: $gray-700;
+    color: #d1fae5;
+    border-bottom: 1px solid $gray-600;
+}
+
+.card-footer {
+    background: $gray-700;
+    border-top: 1px solid $gray-600;
+}
+
+.card-body {
+    color: #d1fae5;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn-primary {
+    background: $primary;
+    border-color: $primary;
+}
+
+.btn-primary:hover {
+    background: lighten($primary, 6%);
+}
+
+.btn-success { background: $success; }
+.btn-danger  { background: $danger; }
+
+.btn {
+    color: #e5f7f4;
+}
+
+.btn:not([class*=ghost]):not([class*=link]) {
+    box-shadow:
+        0 2px 6px rgb(0 0 0 / 35%),
+        inset 0 1px 0 rgb(255 255 255 / 5%);
+}
+
+/* =========================================================
+   FORMS (INI SUMBER PUTIH PALING SERING)
+   ========================================================= */
+.form-control,
+.form-select,
+input,
+textarea,
+select {
+    background: $gray-800 !important;
+    color: #d1fae5;
+    border: 1px solid $gray-600;
+}
+
+.form-control::placeholder {
+    color: #7fbfb3;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: $gray-800 !important;
+    color: #ffffff;
+    border-color: $primary;
+    box-shadow: 0 0 0 .15rem rgba(15,118,110,.4);
+}
+
+/* =========================================================
+   DROPDOWN / MODAL (PUTIH HILANG)
+   ========================================================= */
+.dropdown-menu,
+.modal-content {
+    background: $gray-800;
+    color: #d1fae5;
+    border: 1px solid $gray-600;
+}
+
+.dropdown-item {
+    color: #9fe3d7;
+}
+
+.dropdown-item:hover {
+    background: $gray-700;
+    color: #ffffff;
+}
+
+/* =========================================================
+   TABLES (GARIS PUTIH DIHILANGKAN)
+   ========================================================= */
+.table {
+    color: #d1fae5;
+    background: $gray-800;
+}
+
+.table th,
+.table td {
+    border-color: $gray-600 !important;
+}
+
+.table thead th {
+    background: $gray-700;
+    color: #e5f7f4;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(15,118,110,.12);
+}
+
+/* =========================================================
+   DATATABLES
+   ========================================================= */
+.dataTables_wrapper {
+    color: #d1fae5;
+}
+
+.dataTables_wrapper input,
+.dataTables_wrapper select {
+    background: $gray-800 !important;
+    color: #d1fae5;
+    border: 1px solid $gray-600;
+}
+
+.dataTables_wrapper .paginate_button.current {
+    background: $primary !important;
+    color: #ffffff !important;
+}
+
+/* =========================================================
+   DROPZONE
+   ========================================================= */
+.dropzone {
+    background: rgba(15,118,110,.15);
+    border: 2px dashed rgba(15,118,110,.6);
+}
+
+.dz-preview {
+    background: rgba(15,118,110,.2) !important;
+}
+
+/* =========================================================
+   TABLE WIDTH FIX
+   ========================================================= */
+table {
+    width: 990px !important;
+}
+
+@media (min-width: 992px) {
+    table {
+        width: 100% !important;
+    }
+}
+/* =========================================================
+   FORCE HAMBURGER ICON WHITE (PERMANENT)
+   ========================================================= */
+
+/* CoreUI header toggler */
+.c-header-toggler {
+    color: #ffffff !important;
+}
+
+/* Icon (SVG / background-image) */
+.c-header-toggler-icon {
+    filter: invert(1) brightness(2) !important;
+    opacity: 1 !important;
+}
+
+/* Jika CoreUI pakai SVG */
+.c-header-toggler svg,
+.c-header-toggler svg path {
+    stroke: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+/* Bootstrap navbar fallback */
+.navbar-toggler {
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,.2) !important;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1) brightness(2) !important;
+}
+
+/* Semua state: hover, focus, active */
+.c-header-toggler:hover,
+.c-header-toggler:focus,
+.c-header-toggler:active {
+    color: #ffffff !important;
+}
+/* =========================================================
+   BUTTON TEXT COLOR FIX
+   ========================================================= */
+
+/* Dark buttons → text putih */
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-info,
+.btn-dark {
+    color: #ffffff !important;
+}
+
+/* Light buttons → text gelap */
+.btn-secondary,
+.btn-light,
+.btn-outline-secondary,
+.btn-outline-light {
+    color: #0b1412 !important;
+}
+
+/* DataTables buttons (Excel, Print, Reload, dll) */
+.dt-button,
+.buttons-excel,
+.buttons-print,
+.buttons-csv,
+.buttons-pdf,
+.buttons-copy {
+    background: #ffffff !important;
+    color: #0b1412 !important;
+    border: 1px solid #4b5f5a !important;
+}
+
+/* Hover tetap enak */
+.dt-button:hover,
+.buttons-excel:hover,
+.buttons-print:hover {
+    background: #e6f4f1 !important;
+    color: #022c22 !important;
+}
