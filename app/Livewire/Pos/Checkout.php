@@ -4,6 +4,7 @@ namespace App\Livewire\Pos;
 
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Livewire\Component;
+use Modules\People\Entities\Customer;
 
 class Checkout extends Component
 {
@@ -23,18 +24,35 @@ class Checkout extends Component
     public $customer_id;
     public $total_amount;
 
+    // public function mount($cartInstance, $customers) {
+    //     $this->cart_instance = $cartInstance;
+    //     $this->customers = $customers;
+    //     $this->global_discount = 0;
+    //     $this->global_tax = 0;
+    //     $this->shipping = 0.00;
+    //     $this->check_quantity = [];
+    //     $this->quantity = [];
+    //     $this->discount_type = [];
+    //     $this->item_discount = [];
+    //     $this->total_amount = 0;
+    // }
+
     public function mount($cartInstance, $customers) {
-        $this->cart_instance = $cartInstance;
-        $this->customers = $customers;
-        $this->global_discount = 0;
-        $this->global_tax = 0;
-        $this->shipping = 0.00;
-        $this->check_quantity = [];
-        $this->quantity = [];
-        $this->discount_type = [];
-        $this->item_discount = [];
-        $this->total_amount = 0;
-    }
+    $this->cart_instance = $cartInstance;
+    $this->customers = $customers;
+
+    $nonMember = Customer::where('customer_name', 'Non Member')->first();
+    $this->customer_id = $nonMember?->id;
+
+    $this->global_discount = 0;
+    $this->global_tax = 0;
+    $this->shipping = 0.00;
+    $this->check_quantity = [];
+    $this->quantity = [];
+    $this->discount_type = [];
+    $this->item_discount = [];
+    $this->total_amount = 0;
+}
 
     public function hydrate() {
         $this->total_amount = $this->calculateTotal();
