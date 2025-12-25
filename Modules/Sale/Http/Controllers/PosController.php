@@ -28,158 +28,73 @@ class PosController extends Controller
     }
 
 
-    // public function store(StorePosSaleRequest $request) {
-    //     DB::transaction(function () use ($request) {
-    //         $due_amount = $request->total_amount - $request->paid_amount;
+    public function store(StorePosSaleRequest $request) {
+        DB::transaction(function () use ($request) {
+            $due_amount = $request->total_amount - $request->paid_amount;
 
-    //         if ($due_amount == $request->total_amount) {
-    //             $payment_status = 'Unpaid';
-    //         } elseif ($due_amount > 0) {
-    //             $payment_status = 'Partial';
-    //         } else {
-    //             $payment_status = 'Paid';
-    //         }
+            if ($due_amount == $request->total_amount) {
+                $payment_status = 'Unpaid';
+            } elseif ($due_amount > 0) {
+                $payment_status = 'Partial';
+            } else {
+                $payment_status = 'Paid';
+            }
 
-    //         $sale = Sale::create([
-    //             'date' => now()->format('Y-m-d'),
-    //             'reference' => 'PSL',
-    //             'customer_id' => $request->customer_id,
-    //             'customer_name' => Customer::findOrFail($request->customer_id)->customer_name,
-    //             'tax_percentage' => $request->tax_percentage,
-    //             'discount_percentage' => $request->discount_percentage,
-    //             'shipping_amount' => $request->shipping_amount * 100,
-    //             'paid_amount' => $request->paid_amount * 100,
-    //             'total_amount' => $request->total_amount * 100,
-    //             'due_amount' => $due_amount * 100,
-    //             'status' => 'Completed',
-    //             'payment_status' => $payment_status,
-    //             'payment_method' => $request->payment_method,
-    //             'note' => $request->note,
-    //             'tax_amount' => Cart::instance('sale')->tax() * 100,
-    //             'discount_amount' => Cart::instance('sale')->discount() * 100,
-    //         ]);
+            $sale = Sale::create([
+                'date' => now()->format('Y-m-d'),
+                'reference' => 'PSL',
+                'customer_id' => $request->customer_id,
+                'customer_name' => Customer::findOrFail($request->customer_id)->customer_name,
+                'tax_percentage' => $request->tax_percentage,
+                'discount_percentage' => $request->discount_percentage,
+                'shipping_amount' => $request->shipping_amount * 100,
+                'paid_amount' => $request->paid_amount * 100,
+                'total_amount' => $request->total_amount * 100,
+                'due_amount' => $due_amount * 100,
+                'status' => 'Completed',
+                'payment_status' => $payment_status,
+                'payment_method' => $request->payment_method,
+                'note' => $request->note,
+                'tax_amount' => Cart::instance('sale')->tax() * 100,
+                'discount_amount' => Cart::instance('sale')->discount() * 100,
+            ]);
 
-    //         foreach (Cart::instance('sale')->content() as $cart_item) {
-    //             SaleDetails::create([
-    //                 'sale_id' => $sale->id,
-    //                 'product_id' => $cart_item->id,
-    //                 'product_name' => $cart_item->name,
-    //                 'product_code' => $cart_item->options->code,
-    //                 'quantity' => $cart_item->qty,
-    //                 'price' => $cart_item->price * 100,
-    //                 'unit_price' => $cart_item->options->unit_price * 100,
-    //                 'sub_total' => $cart_item->options->sub_total * 100,
-    //                 'product_discount_amount' => $cart_item->options->product_discount * 100,
-    //                 'product_discount_type' => $cart_item->options->product_discount_type,
-    //                 'product_tax_amount' => $cart_item->options->product_tax * 100,
-    //             ]);
+            foreach (Cart::instance('sale')->content() as $cart_item) {
+                SaleDetails::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $cart_item->id,
+                    'product_name' => $cart_item->name,
+                    'product_code' => $cart_item->options->code,
+                    'quantity' => $cart_item->qty,
+                    'price' => $cart_item->price * 100,
+                    'unit_price' => $cart_item->options->unit_price * 100,
+                    'sub_total' => $cart_item->options->sub_total * 100,
+                    'product_discount_amount' => $cart_item->options->product_discount * 100,
+                    'product_discount_type' => $cart_item->options->product_discount_type,
+                    'product_tax_amount' => $cart_item->options->product_tax * 100,
+                ]);
 
-    //             $product = Product::findOrFail($cart_item->id);
-    //             $product->update([
-    //                 'product_quantity' => $product->product_quantity - $cart_item->qty
-    //             ]);
-    //         }
+                $product = Product::findOrFail($cart_item->id);
+                $product->update([
+                    'product_quantity' => $product->product_quantity - $cart_item->qty
+                ]);
+            }
 
-    //         Cart::instance('sale')->destroy();
+            Cart::instance('sale')->destroy();
 
-    //         if ($sale->paid_amount > 0) {
-    //             SalePayment::create([
-    //                 'date' => now()->format('Y-m-d'),
-    //                 'reference' => 'INV/'.$sale->reference,
-    //                 'amount' => $sale->paid_amount,
-    //                 'sale_id' => $sale->id,
-    //                 'payment_method' => $request->payment_method
-    //             ]);
-    //         }
-    //     });
+            if ($sale->paid_amount > 0) {
+                SalePayment::create([
+                    'date' => now()->format('Y-m-d'),
+                    'reference' => 'INV/'.$sale->reference,
+                    'amount' => $sale->paid_amount,
+                    'sale_id' => $sale->id,
+                    'payment_method' => $request->payment_method
+                ]);
+            }
+        });
 
-    //     toast('POS Sale Created!', 'success');
+        toast('POS Sale Created!', 'success');
 
-    //     return redirect()->route('app.pos.index');
-    // }
-//     public function store(StorePosSaleRequest $request) {
-//     DB::transaction(function () use ($request) {
-
-//         // 🔴 DEFAULT CUSTOMER NON MEMBER (ID = 3)
-//         $customerId = $request->customer_id ?? 3;
-
-//         $due_amount = $request->total_amount - $request->paid_amount;
-
-//         if ($due_amount == $request->total_amount) {
-//             $payment_status = 'Unpaid';
-//         } elseif ($due_amount > 0) {
-//             $payment_status = 'Partial';
-//         } else {
-//             $payment_status = 'Paid';
-//         }
-
-//         $sale = Sale::create([
-//             'date' => now()->format('Y-m-d'),
-//             'reference' => 'PSL',
-//             'customer_id' => $customerId,
-//             'customer_name' => Customer::find($customerId)->customer_name,
-//             'tax_percentage' => $request->tax_percentage,
-//             'discount_percentage' => $request->discount_percentage,
-//             'shipping_amount' => $request->shipping_amount * 100,
-//             'paid_amount' => $request->paid_amount * 100,
-//             'total_amount' => $request->total_amount * 100,
-//             'due_amount' => $due_amount * 100,
-//             'status' => 'Completed',
-//             'payment_status' => $payment_status,
-//             'payment_method' => $request->payment_method,
-//             'note' => $request->note,
-//             'tax_amount' => Cart::instance('sale')->tax() * 100,
-//             'discount_amount' => Cart::instance('sale')->discount() * 100,
-//         ]);
-
-//         // kode lain tetap
-//     });
-
-//     toast('POS Sale Created!', 'success');
-//     return redirect()->route('app.pos.index');
-// }
-public function store(StorePosSaleRequest $request) {
-    DB::transaction(function () use ($request) {
-
-        // 🔴 DEFAULT CUSTOMER NON MEMBER
-        $customerId = $request->customer_id
-            ?? Customer::where('customer_name', 'Non Member')->value('id');
-
-        $due_amount = $request->total_amount - $request->paid_amount;
-
-        if ($due_amount == $request->total_amount) {
-            $payment_status = 'Unpaid';
-        } elseif ($due_amount > 0) {
-            $payment_status = 'Partial';
-        } else {
-            $payment_status = 'Paid';
-        }
-
-        $sale = Sale::create([
-            'date' => now()->format('Y-m-d'),
-            'reference' => 'PSL',
-            'customer_id' => $customerId,
-            'customer_name' => Customer::find($customerId)->customer_name,
-            'tax_percentage' => $request->tax_percentage,
-            'discount_percentage' => $request->discount_percentage,
-            'shipping_amount' => $request->shipping_amount * 100,
-            'paid_amount' => $request->paid_amount * 100,
-            'total_amount' => $request->total_amount * 100,
-            'due_amount' => $due_amount * 100,
-            'status' => 'Completed',
-            'payment_status' => $payment_status,
-            'payment_method' => $request->payment_method,
-            'note' => $request->note,
-            'tax_amount' => Cart::instance('sale')->tax() * 100,
-            'discount_amount' => Cart::instance('sale')->discount() * 100,
-        ]);
-
-        // (kode selanjutnya tetap sama)
-    });
-
-    toast('POS Sale Created!', 'success');
-    return redirect()->route('app.pos.index');
-}
-
-
+        return redirect()->route('app.pos.index');
+    }
 }
