@@ -20,7 +20,7 @@
                     <input
                         type="text"
                         class="form-control"
-                        placeholder="Scan barcode / type product"
+                        placeholder="HANYA SCAN BARCODE"
                         wire:model.live.debounce.100ms="query"
                         wire:keydown.escape="resetQuery"
                         autofocus

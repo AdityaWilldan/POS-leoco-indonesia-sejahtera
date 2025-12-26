@@ -10,13 +10,10 @@ class SearchProduct extends Component
 {
     public $query;
     public $search_results;
-    public $how_many;
-    public $auto_proceed = true; // aktifkan auto proceed checkout
 
     public function mount()
     {
         $this->query = '';
-        $this->how_many = 5;
         $this->search_results = Collection::empty();
     }
 
@@ -26,68 +23,42 @@ class SearchProduct extends Component
     }
 
     /**
-     * Live search products
+     * BARCODE ONLY SEARCH
      */
     public function updatedQuery()
     {
-        if (trim($this->query) === '') {
+        
+        if ($this->query === '') {
             $this->resetQuery();
             return;
         }
 
-        $this->search_results = Product::where('product_name', 'like', '%' . $this->query . '%')
-            ->orWhere('product_code', 'like', '%' . $this->query . '%')
-            ->take($this->how_many)
-            ->get();
+        
+        if (!ctype_digit($this->query)) {
+            $this->dispatch('barcodeError', 'Barcode harus berupa angka');
+            $this->resetQuery();
+            return;
+        }
 
-        // trigger JS untuk auto select
-        $this->dispatch('searchResultsUpdated');
-    }
+       
+        $product = Product::where('product_code', $this->query)->first();
 
-    /**
-     * Pilih produk pertama otomatis
-     */
-    public function selectFirstResult()
-    {
-        if ($this->search_results->count() > 0) {
-            $product = $this->search_results->first();
-
-            // Kirim ke Checkout / Cart
+        if ($product) {
+            
             $this->dispatch('productSelected', $product);
 
-            // Reset search agar siap scan berikutnya
+          
             $this->resetQuery();
-
-            // Trigger checkout modal
-            // if ($this->auto_proceed) {
-            //     $this->dispatch('showCheckoutModal');
-            // }
+        } else {
+            
+            $this->dispatch('barcodeError', 'Produk dengan barcode ini tidak ditemukan');
+            $this->resetQuery();
         }
-    }
-
-    /**
-     * Klik manual fallback
-     */
-    public function selectProduct($product)
-    {
-        $this->dispatch('productSelected', $product);
-        $this->resetQuery();
-
-        // if ($this->auto_proceed) {
-        //     $this->dispatch('showCheckoutModal');
-        // }
-    }
-
-    public function loadMore()
-    {
-        $this->how_many += 5;
-        $this->updatedQuery();
     }
 
     public function resetQuery()
     {
         $this->query = '';
-        $this->how_many = 5;
         $this->search_results = Collection::empty();
     }
 }
