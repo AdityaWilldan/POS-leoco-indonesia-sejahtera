@@ -56,7 +56,8 @@
                                 <a
                                     href="#"
                                     class="text-decoration-none {{ $index === 0 ? 'text-white' : '' }}"
-                                    wire:click.prevent="selectProduct({{ $result }})"
+                                    {{-- wire:click.prevent="selectProduct({{ $result }})" --}}
+                                    wire:click.prevent="selectProduct({{ $result->id }})"
                                 >
                                     {{ $result->product_name }}
                                     <br>

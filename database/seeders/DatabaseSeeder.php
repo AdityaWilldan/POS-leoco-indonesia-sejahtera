@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SuperUserSeeder::class);
         $this->call(CurrencyDatabaseSeeder::class);
         $this->call(SettingDatabaseSeeder::class);
+        $this->call(CustomerSeeder::class);
         $this->call(ProductDatabaseSeeder::class);
     }
 }

@@ -71,44 +71,115 @@ class ProductCart extends Component
         ]);
     }
 
-    public function productSelected($product) {
-        $cart = Cart::instance($this->cart_instance);
+    // public function productSelected($product) {
+    //     $cart = Cart::instance($this->cart_instance);
 
-        $exists = $cart->search(function ($cartItem, $rowId) use ($product) {
-            return $cartItem->id == $product['id'];
-        });
+    //     $exists = $cart->search(function ($cartItem, $rowId) use ($product) {
+    //         return $cartItem->id == $product['id'];
+    //     });
 
-        if ($exists->isNotEmpty()) {
-            session()->flash('message', 'Product exists in the cart!');
+    //     if ($exists->isNotEmpty()) {
+    //         session()->flash('message', 'Product exists in the cart!');
 
+    //         return;
+    //     }
+
+    //     $this->product = $product;
+
+    //     $cart->add([
+    //         'id'      => $product['id'],
+    //         'name'    => $product['product_name'],
+    //         'qty'     => 1,
+    //         'price'   => $this->calculate($product)['price'],
+    //         'weight'  => 1,
+    //         'options' => [
+    //             'product_discount'      => 0.00,
+    //             'product_discount_type' => 'fixed',
+    //             'sub_total'             => $this->calculate($product)['sub_total'],
+    //             'code'                  => $product['product_code'],
+    //             'stock'                 => $product['product_quantity'],
+    //             'unit'                  => $product['product_unit'],
+    //             'product_tax'           => $this->calculate($product)['product_tax'],
+    //             'unit_price'            => $this->calculate($product)['unit_price']
+    //         ]
+    //     ]);
+
+    //     $this->check_quantity[$product['id']] = $product['product_quantity'];
+    //     $this->quantity[$product['id']] = 1;
+    //     $this->discount_type[$product['id']] = 'fixed';
+    //     $this->item_discount[$product['id']] = 0;
+    // }
+
+public function productSelected($product)
+{
+    $cart = Cart::instance($this->cart_instance);
+
+    $exists = $cart->search(function ($cartItem) use ($product) {
+        return $cartItem->id == $product['id'];
+    });
+
+    if ($exists->isNotEmpty()) {
+        $rowId = $exists->first()->rowId;
+        $cartItem = $cart->get($rowId);
+
+       
+        if (
+            ($this->cart_instance == 'sale' || $this->cart_instance == 'purchase_return') &&
+            ($cartItem->qty + 1 > $cartItem->options->stock)
+        ) {
+            session()->flash('message', 'The requested quantity is not available in stock.');
             return;
         }
 
-        $this->product = $product;
+        
+        $newQty = $cartItem->qty + 1;
+        $cart->update($rowId, $newQty);
 
-        $cart->add([
-            'id'      => $product['id'],
-            'name'    => $product['product_name'],
-            'qty'     => 1,
-            'price'   => $this->calculate($product)['price'],
-            'weight'  => 1,
+       
+        $cart->update($rowId, [
             'options' => [
-                'product_discount'      => 0.00,
-                'product_discount_type' => 'fixed',
-                'sub_total'             => $this->calculate($product)['sub_total'],
-                'code'                  => $product['product_code'],
-                'stock'                 => $product['product_quantity'],
-                'unit'                  => $product['product_unit'],
-                'product_tax'           => $this->calculate($product)['product_tax'],
-                'unit_price'            => $this->calculate($product)['unit_price']
+                'sub_total'             => $cartItem->price * $newQty,
+                'code'                  => $cartItem->options->code,
+                'stock'                 => $cartItem->options->stock,
+                'unit'                  => $cartItem->options->unit,
+                'product_tax'           => $cartItem->options->product_tax,
+                'unit_price'            => $cartItem->options->unit_price,
+                'product_discount'      => $cartItem->options->product_discount,
+                'product_discount_type' => $cartItem->options->product_discount_type,
             ]
         ]);
 
-        $this->check_quantity[$product['id']] = $product['product_quantity'];
-        $this->quantity[$product['id']] = 1;
-        $this->discount_type[$product['id']] = 'fixed';
-        $this->item_discount[$product['id']] = 0;
+      
+        $this->quantity[$product['id']] = $newQty;
+
+        return;
     }
+
+   
+    $cart->add([
+        'id'      => $product['id'],
+        'name'    => $product['product_name'],
+        'qty'     => 1,
+        'price'   => $this->calculate($product)['price'],
+        'weight'  => 1,
+        'options' => [
+            'product_discount'      => 0.00,
+            'product_discount_type' => 'fixed',
+            'sub_total'             => $this->calculate($product)['sub_total'],
+            'code'                  => $product['product_code'],
+            'stock'                 => $product['product_quantity'],
+            'unit'                  => $product['product_unit'],
+            'product_tax'           => $this->calculate($product)['product_tax'],
+            'unit_price'            => $this->calculate($product)['unit_price'],
+        ]
+    ]);
+
+    $this->check_quantity[$product['id']] = $product['product_quantity'];
+    $this->quantity[$product['id']] = 1;
+    $this->discount_type[$product['id']] = 'fixed';
+    $this->item_discount[$product['id']] = 0;
+}
+
 
     public function removeItem($row_id) {
         Cart::instance($this->cart_instance)->remove($row_id);
